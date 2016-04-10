@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<h1>Music share</h1>
+			
+			<div class="form-group">
+				<form>
+					<input type="text" class="form-control" id="url" />
+					<br>
+					<button class="btn btn-primary" id="addBtn">Send</button>
+				</form>
+			</div>
+
+			<ul class="list-group">
+			</ul>
+		</div>
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
+	<script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+
+	<script src="js/config.js"></script>
+	<script src="js/main.js"></script>
+	<script> musicShare.init(); </script>
+
+</body>
+</html>
