@@ -3,6 +3,12 @@
 <head>
 	<title></title>
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<style type="text/css">
+		.list-group-item.active{
+			background-color: #01DC83;
+			border-color:white;
+		}
+	</style>
 </head>
 <body>
 	<div class="container">
@@ -13,10 +19,12 @@
 				<form>
 					<input type="text" class="form-control" id="url" />
 					<br>
-					<button class="btn btn-primary" id="addBtn">Send</button>
+					<button class="btn btn-default" id="addBtn">Send</button>
 				</form>
 			</div>
 
+			<br>
+			<h4>Current playlist</h4>
 			<ul class="list-group">
 			</ul>
 		</div>

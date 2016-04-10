@@ -40,13 +40,15 @@ var musicShare = {
 			musicShare.firebase.child.push({
 				urlYoutube: $('#url').val(),
 				videoTitle: videoTitle,
-				played: 0
+				played: 0,
+				currentPlayed: 0
 			});
 		});
 	},
 
 	renderPlayList: function(){
-		this.firebase.child.orderByChild("played").equalTo(0).on("child_added", function(snapshot, prevChildKey) {
+		//this.firebase.child.orderByChild("played").equalTo(0).on("child_added", function(snapshot, prevChildKey) {
+		this.firebase.child.on("child_added", function(snapshot, prevChildKey) {
 			console.log(snapshot.val());
 		  	var newItem = snapshot.val();
 		  	musicShare.dom.playList.append("<li class='list-group-item'>" + newItem.videoTitle + "</li>");
