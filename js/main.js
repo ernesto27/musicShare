@@ -23,6 +23,17 @@ var musicShare = {
 		this.firebase.ref = new Firebase(this.firebaseURL);
 		this.firebase.child = this.firebase.ref.child(this.firebaseChild);
 
+		musicShare.firebase.child.on('child_changed', function(childSnapshot, prevChildKey) {
+			console.log(childSnapshot.val());
+			console.log(childSnapshot.key());
+			musicShare.dom.playList.find('li').removeClass('active');
+			musicShare.dom.playList.find('li').each(function(index, value){ 
+				if($(this).data('key') == childSnapshot.key()){
+					$(this).addClass('active');
+				}
+			});
+		});
+
 	},
 
 	events: function(){
@@ -51,7 +62,10 @@ var musicShare = {
 		this.firebase.child.on("child_added", function(snapshot, prevChildKey) {
 			console.log(snapshot.val());
 		  	var newItem = snapshot.val();
-		  	musicShare.dom.playList.append("<li class='list-group-item'>" + newItem.videoTitle + "</li>");
+		  	var active = (newItem.currentPlayed) ? 'active' : '';
+		  	var key = snapshot.key();
+		  	var li = "<li class='list-group-item "+ active +"' data-key="+ key +">" + newItem.videoTitle + "</li>"
+		  	musicShare.dom.playList.append(li);
 		});	
 	},
 

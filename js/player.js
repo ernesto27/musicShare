@@ -21,7 +21,7 @@ var musicPlayer = jQuery.extend(musicShareBase, {
 	},
 
 	initYT: function(){
-		var firstPlayed = false;
+		var firstPlayed = true;
 
 		//musicPlayer.firebase.child.orderByChild("played").equalTo(0).on("child_added", function(snapshot, prevChildKey) {
 		musicPlayer.firebase.child.on("child_added", function(snapshot, prevChildKey) {
@@ -29,7 +29,7 @@ var musicPlayer = jQuery.extend(musicShareBase, {
 			var item = snapshot.val();
 		  	console.log(item)
 	
-		  	musicPlayer.dom.list.append("<li>" + item.urlYoutube + "</li>");
+		  	musicPlayer.dom.list.append("<li>" + item.videoTitle + "</li>");
 
 		  	if(!item.played){
 		  		var videoID = musicPlayer.getVideoID(item.urlYoutube);
@@ -38,18 +38,20 @@ var musicPlayer = jQuery.extend(musicShareBase, {
 
 		  	}
 		  	if(musicPlayer.items.length){
-
-			  	if(!firstPlayed){
+			  	if(firstPlayed){
 			  		//musicPlayer.player.loadVideoById(musicPlayer.playList[0]);
+			  		musicPlayer.updateCurrentPlayed(0);
 			  		musicPlayer.player.loadVideoById(musicPlayer.items[0].videoID);
-			  		firstPlayed = true;
+			  		musicPlayer.updateCurrentPlayed(1);
+			  		firstPlayed = false;
 			  		
 			  	}else{
 			  		if(!musicPlayer.isPlaying){
+			  			musicPlayer.updateCurrentPlayed(0);
 			  			musicPlayer.player.loadVideoById(musicPlayer.items.next().videoID);
 			  			musicPlayer.isPlaying = true;
+			  			musicPlayer.updateCurrentPlayed(1);
 			  		}
-			  		//musicPlayer.player.loadVideoById(musicPlayer.items.next().videoID);
 			  	}
 			 }
 		});			
@@ -57,31 +59,36 @@ var musicPlayer = jQuery.extend(musicShareBase, {
 
 	onPlayerStateChange: function(event){
 		if(event.data == 0){
-		    //musicPlayer.player.loadVideoById(musicPlayer.playList.next());
-		    // Update video played
-		    // Prevent if no more items
-		    
-		    console.log(musicPlayer.items.current )
-		    console.log(musicPlayer.items.length - 1)
 		    if(musicPlayer.items.current == musicPlayer.items.length - 1){
 		    	musicPlayer.isPlaying = false;
 		    	return false;
 		    }
 
-
-
-		    musicPlayer.updateVideoStatus();
-		    console.log(musicPlayer.items.current);
+		    console.log(musicPlayer.items[musicPlayer.items.current]);
+		    musicPlayer.updateCurrentPlayed(0);
 		    musicPlayer.player.loadVideoById(musicPlayer.items.next().videoID);
 		    musicPlayer.player.playVideo();
+		    musicPlayer.updateVideoStatus();
+		    musicPlayer.updateCurrentPlayed(1);
+		    console.log(musicPlayer.items[musicPlayer.items.current]);
 		}
 	},
 
+	getUpdateURL: function(){
+		return config.firebaseURL + config.firebaseChild + "/" + musicPlayer.items[musicPlayer.items.current].key;
+	},
 
 	updateVideoStatus: function(){
-		var url = config.firebaseURL + config.firebaseChild + "/" + musicPlayer.items[musicPlayer.items.current].key;
+		var url = this.getUpdateURL();;
 		var firebaseUpdate  = new Firebase(url);
 		firebaseUpdate.update({ 'played': 1});
+	},
+
+	updateCurrentPlayed: function(value){
+		var url = this.getUpdateURL();
+		var firebaseUpdate  = new Firebase(url);
+		var type = (value) ? 1 : 0;
+		firebaseUpdate.update({ 'currentPlayed': type});
 	}
 		
 });
