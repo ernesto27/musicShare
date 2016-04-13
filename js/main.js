@@ -44,7 +44,24 @@ var musicShare = {
 	// methods
 	addItem: function(e){
 		e.preventDefault();
-		// Get title video
+		// Todo check valid image
+		var url = musicShare.dom.url.val();
+		// spotify add
+		var split = url.split("/");
+		var id = split[split.length - 1];
+		musicShare.getAlbumName(id, function(title){
+			musicShare.firebase.child.push({
+				played: 0,
+				currentPlayed: 0,
+				source: 'spotify',
+				urlSpotify: url,
+				title: title
+			});
+		});
+		
+		
+		// youtube add
+		/*
 		var url = musicShare.dom.url.val();
 		var videoID = musicShare.getVideoID(url);
 		musicShare.getVideoTitle(videoID, function(videoTitle){
@@ -55,6 +72,7 @@ var musicShare = {
 				currentPlayed: 0
 			});
 		});
+		*/
 	},
 
 	renderPlayList: function(){
@@ -64,7 +82,7 @@ var musicShare = {
 		  	var newItem = snapshot.val();
 		  	var active = (newItem.currentPlayed) ? 'active' : '';
 		  	var key = snapshot.key();
-		  	var li = "<li class='list-group-item "+ active +"' data-key="+ key +">" + newItem.videoTitle + "</li>"
+		  	var li = "<li class='list-group-item "+ active +"' data-key="+ key +">" + newItem.title + "</li>"
 		  	musicShare.dom.playList.append(li);
 		});	
 	},
@@ -88,6 +106,15 @@ var musicShare = {
 		$.get(this.getYoutubeURLApi(videoID), function(data){
 			var videoTitle = data.items[0].snippet.title;
 			callback(videoTitle);
+		}, 'json');
+	},
+
+	getAlbumName: function(id, callback){
+		$.get('https://api.spotify.com/v1/albums/' + id, function(data){
+			console.log(data);
+			var artist = data.artists[0].name;
+			var album = data.name;
+			callback(artist + " - " + album);
 		}, 'json');
 	}
 };
