@@ -94,7 +94,10 @@ var musicPlayer = jQuery.extend(musicShareBase, {
 
 	playSpotify: function(){
 		alert("Play spotify album");
-		if(!musicPlayer.firstPlayed) musicPlayer.current += 1;
+		if(!musicPlayer.firstPlayed){
+			musicPlayer.updateVideoStatus(musicPlayer.current);
+			musicPlayer.current += 1;
+		}
 
 		musicPlayer.dom.wrapperSpotify
 		  		   .empty()
@@ -103,12 +106,20 @@ var musicPlayer = jQuery.extend(musicShareBase, {
 	},
 
 	playYoutube: function(index){
-		if(!musicPlayer.firstPlayed) musicPlayer.current += 1;
+		if(!musicPlayer.firstPlayed){
+			musicPlayer.updateVideoStatus(musicPlayer.current);
+			musicPlayer.current += 1;
+		}
+
 		musicPlayer.player.loadVideoById(musicPlayer.items[musicPlayer.current].videoID);
 	},
 
 
 	nextFromSpotify: function(){
+		// Check if are more items
+		if(musicPlayer.items.current + 1 == musicPlayer.items.length){
+			return;
+		}
 
 		if(musicPlayer.items[musicPlayer.current + 1].source == "youtube"){
 			musicPlayer.playYoutube();
@@ -143,8 +154,8 @@ var musicPlayer = jQuery.extend(musicShareBase, {
 		return config.firebaseURL + config.firebaseChild + "/" + musicPlayer.items[index].key;
 	},
 
-	updateVideoStatus: function(){
-		var url = this.getUpdateURL();;
+	updateVideoStatus: function(index){
+		var url = this.getUpdateURL(index);
 		var firebaseUpdate  = new Firebase(url);
 		firebaseUpdate.update({ 'played': 1});
 	},
