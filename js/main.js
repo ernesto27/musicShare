@@ -46,33 +46,57 @@ var musicShare = {
 		e.preventDefault();
 		// Todo check valid image
 		var url = musicShare.dom.url.val();
-		// spotify add
-		var split = url.split("/");
-		var id = split[split.length - 1];
-		musicShare.getAlbumName(id, function(title){
-			musicShare.firebase.child.push({
-				played: 0,
-				currentPlayed: 0,
-				source: 'spotify',
-				urlSpotify: url,
-				title: title
+
+		// Check if is spotify or youtube url
+		var check = url.match(/youtube|spotify/);
+
+		if(check){
+			switch(check[0]){
+				case 'youtube':
+					addYoutube();
+					break;
+				case 'spotify':
+					addSpotify();
+					break;
+			}
+
+		}else{
+			alert("Insert a valid url");
+			return;
+		} 
+
+		function addSpotify(){
+			var split = url.split("/");
+			var id = split[split.length - 1];
+			musicShare.getAlbumName(id, function(title){
+				musicShare.firebase.child.push({
+					played: 0,
+					currentPlayed: 0,
+					source: 'spotify',
+					urlSpotify: url,
+					title: title
+				});
 			});
-		});
+		}
 		
 		
-		// youtube add
-		/*
-		var url = musicShare.dom.url.val();
-		var videoID = musicShare.getVideoID(url);
-		musicShare.getVideoTitle(videoID, function(videoTitle){
-			musicShare.firebase.child.push({
-				urlYoutube: $('#url').val(),
-				videoTitle: videoTitle,
-				played: 0,
-				currentPlayed: 0
+		function addYoutube(){
+			var url = musicShare.dom.url.val();
+			var videoID = musicShare.getVideoID(url);
+			musicShare.getVideoTitle(videoID, function(videoTitle){
+				musicShare.firebase.child.push({
+					played: 0,
+					currentPlayed: 0,
+					source: 'youtube',
+					urlYoutube: $('#url').val(),
+					title: videoTitle,
+					videoID: videoID
+
+					
+				});
 			});
-		});
-		*/
+		}
+	
 	},
 
 	renderPlayList: function(){
