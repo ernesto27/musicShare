@@ -54,41 +54,6 @@ var musicPlayer = jQuery.extend(musicShareBase, {
 
 			}
 
-			/*
-		  	if(firstPlayed && musicPlayer.items.length){
-		  		musicPlayer.renderSpotify(musicPlayer.current);
-		  		firstPlayed = false;
-		  	}
-		  	*/
-
-
-		  	//musicPlayer.dom.list.append("<li>" + item.videoTitle + "</li>");
-
-		  	/*
-		  	if(!item.played){
-		  		var videoID = musicPlayer.getVideoID(item.urlYoutube);
-		  		musicPlayer.playList.push(videoID);
-				musicPlayer.items.push({ key: snapshot.key(), 'videoID': musicPlayer.getVideoID(item.urlYoutube)});
-
-		  	}
-		  	if(musicPlayer.items.length){
-			  	if(firstPlayed){
-			  		//musicPlayer.player.loadVideoById(musicPlayer.playList[0]);
-			  		musicPlayer.updateCurrentPlayed(0);
-			  		musicPlayer.player.loadVideoById(musicPlayer.items[0].videoID);
-			  		musicPlayer.updateCurrentPlayed(1);
-			  		firstPlayed = false;
-			  		
-			  	}else{
-			  		if(!musicPlayer.isPlaying){
-			  			musicPlayer.updateCurrentPlayed(0);
-			  			musicPlayer.player.loadVideoById(musicPlayer.items.next().videoID);
-			  			musicPlayer.isPlaying = true;
-			  			musicPlayer.updateCurrentPlayed(1);
-			  		}
-			  	}
-			}
-			*/
 		});		
 	},
 
@@ -112,6 +77,7 @@ var musicPlayer = jQuery.extend(musicShareBase, {
 		}
 
 		musicPlayer.player.loadVideoById(musicPlayer.items[musicPlayer.current].videoID);
+		musicPlayer.updateCurrentPlayed(1);
 	},
 
 
@@ -137,14 +103,14 @@ var musicPlayer = jQuery.extend(musicShareBase, {
 		    }
 		    
 		    // Youtube video is over , play next thing
-		    if(musicPlayer.items.next().source == "youtube"){
+		    if(musicPlayer.items[musicPlayer.current].source == "youtube"){
 			    musicPlayer.playYoutube();
 			    //musicPlayer.player.loadVideoById(musicPlayer.items.next().videoID);
 			    //musicPlayer.player.playVideo();
 			    //musicPlayer.updateVideoStatus();
 
 		    }else{ // spotify
-		    	musicPlayer.playSpotify(musicPlayer.items.next());
+		    	musicPlayer.playSpotify(musicPlayer.current++);
 		    }
 
 		}
@@ -161,7 +127,8 @@ var musicPlayer = jQuery.extend(musicShareBase, {
 	},
 
 	updateCurrentPlayed: function(value){
-		var url = this.getUpdateURL();
+		//var url = this.getUpdateURL();
+		var url = config.firebaseURL + config.firebaseChild + "/" + musicPlayer.items[musicPlayer.current].key;
 		var firebaseUpdate  = new Firebase(url);
 		var type = (value) ? 1 : 0;
 		firebaseUpdate.update({ 'currentPlayed': type});
