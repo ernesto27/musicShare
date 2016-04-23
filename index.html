@@ -31,8 +31,16 @@
 		</div>
 	</div>
 
+
+	<!-- TEMPLATES -->
+	<!-- ITEM LIST -->
+	<script id="item-tpl" type="text/x-handlebars-template">
+		<li class='list-group-item {{#if active}} active {{/if}}' data-key='{{key}}'>{{title}}</li>
+	</script>
+
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
 	<script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+	<script src="bower_components/handlebars/handlebars.min.js"></script>
 
 	<script src="js/config.js"></script>
 	<script src="js/main.js"></script>
@@ -40,3 +48,17 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

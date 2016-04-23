@@ -9,14 +9,20 @@ var musicShare = {
 
 	dom:{
 		url: $('#url'),
-		playList: $('.list-group')
+		playList: $('.list-group'),
+		itemTpl: $('#item-tpl')
 	},
+
+	template: null,
 
 
 	init: function(){
 		this.events();
 		this.initFirebase();
 		this.renderPlayList();
+
+		var source   = this.dom.itemTpl.html();
+		this.template = Handlebars.compile(source);
 	},
 	
 	initFirebase: function(){
@@ -106,8 +112,12 @@ var musicShare = {
 		  	var newItem = snapshot.val();
 		  	var active = (newItem.currentPlayed) ? 'active' : '';
 		  	var key = snapshot.key();
-		  	var li = "<li class='list-group-item "+ active +"' data-key="+ key +">" + newItem.title + "</li>"
-		  	musicShare.dom.playList.append(li);
+		  	//var li = "<li class='list-group-item "+ active +"' data-key="+ key +">" + newItem.title + "</li>"
+		  	musicShare.dom.playList.append(musicShare.template({
+		  		key: key,
+		  		title: newItem.title,
+		  		active: active
+		  	}));
 		});	
 	},
 
@@ -122,12 +132,13 @@ var musicShare = {
 	},
 
 	getYoutubeURLApi: function(videoID){
-		return 'https://www.googleapis.com/youtube/v3/videos?part=snippet&id='+ videoID +'&key=' + this.youtubeAPIKey;
+		return 'https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id='+ videoID +'&key=' + this.youtubeAPIKey;
 	},
 
 	getVideoTitle: function(videoID, callback){
 		//$.get("https://www.googleapis.com/youtube/v3/videos?part=snippet&id="+videoID+"&key="+this.youtubeAPIKey, function(data){
 		$.get(this.getYoutubeURLApi(videoID), function(data){
+			console.log(data);
 			var videoTitle = data.items[0].snippet.title;
 			callback(videoTitle);
 		}, 'json');
