@@ -23,6 +23,7 @@ var musicShare = {
 
 		var source   = this.dom.itemTpl.html();
 		this.template = Handlebars.compile(source);
+
 	},
 	
 	initFirebase: function(){
@@ -89,16 +90,15 @@ var musicShare = {
 		function addYoutube(){
 			var url = musicShare.dom.url.val();
 			var videoID = musicShare.getVideoID(url);
-			musicShare.getVideoTitle(videoID, function(videoTitle){
+			musicShare.getVideoData(videoID, function(videoTitle, duration){
 				musicShare.firebase.child.push({
 					played: 0,
 					currentPlayed: 0,
 					source: 'youtube',
 					urlYoutube: $('#url').val(),
 					title: videoTitle,
-					videoID: videoID
-
-					
+					videoID: videoID,
+					duration: duration
 				});
 			});
 		}
@@ -116,7 +116,8 @@ var musicShare = {
 		  	musicShare.dom.playList.append(musicShare.template({
 		  		key: key,
 		  		title: newItem.title,
-		  		active: active
+		  		active: active,
+		  		duration: newItem.duration
 		  	}));
 		});	
 	},
@@ -135,13 +136,37 @@ var musicShare = {
 		return 'https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id='+ videoID +'&key=' + this.youtubeAPIKey;
 	},
 
-	getVideoTitle: function(videoID, callback){
+	getVideoData: function(videoID, callback){
 		//$.get("https://www.googleapis.com/youtube/v3/videos?part=snippet&id="+videoID+"&key="+this.youtubeAPIKey, function(data){
+		
 		$.get(this.getYoutubeURLApi(videoID), function(data){
 			console.log(data);
 			var videoTitle = data.items[0].snippet.title;
-			callback(videoTitle);
+			var duration   = data.items[0].contentDetails.duration;			  
+			callback(videoTitle, musicShare.getDurationVideo(duration));
 		}, 'json');
+	},
+
+
+	getDurationVideo: function(duration){
+		var regexpDurations = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/;
+		var timeArray = duration.match(regexpDurations);
+		var hour = (timeArray[1]) ? timeArray[1] + ":" : ""; 
+		var minutes = "00";
+		var seconds = "00";
+
+		if(timeArray[2]){
+			minutes = (timeArray[2] < 10) 
+							? 0 + timeArray[2]
+							: timeArray[2]; 
+		}
+		
+		if(timeArray[3]){
+			seconds = (timeArray[3] < 10) 
+							? 0 + timeArray[3]
+							: timeArray[3];
+		}
+		return hour + minutes + ":" + seconds;
 	},
 
 	getAlbumName: function(id, callback){

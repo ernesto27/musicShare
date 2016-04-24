@@ -35,7 +35,10 @@
 	<!-- TEMPLATES -->
 	<!-- ITEM LIST -->
 	<script id="item-tpl" type="text/x-handlebars-template">
-		<li class='list-group-item {{#if active}} active {{/if}}' data-key='{{key}}'>{{title}}</li>
+		<li class='list-group-item {{#if active}} active {{/if}}' data-key='{{key}}'>
+			{{title}}
+			<span style="float:right;">{{duration}}</span>
+		</li>
 	</script>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
